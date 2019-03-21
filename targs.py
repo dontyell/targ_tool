@@ -100,15 +100,15 @@ def main(options):
         logger.setLevel(logging.DEBUG)
 
     logger.info("Building targets list...")
-    targ_list = []
+    # targ_list = []
     targ_set = set()
     for targ in options.targets:
         if is_address(targ):
-            targ_list.append(targ)
+            # targ_list.append(targ)
             targ_set.add(ipaddress.ip_address(targ))
         elif is_subnet(targ):
             targets = ipaddress.ip_network(targ)
-            targ_list.extend(list(targets))
+            # targ_list.extend(list(targets))
             targ_set.update(list(targets))
         else:
             logger.error("%s is not a valid target" % targ)
@@ -118,14 +118,14 @@ def main(options):
     for nsl in options.nostrike:
         if is_address(nsl):
             try:
-                targ_list.remove(ipaddress.ip_address(nsl))
+                # targ_list.remove(ipaddress.ip_address(nsl))
                 nsl_set.add(ipaddress.ip_address(nsl))
             except ValueError:
                 logger.info("{} does not exist in target list, no need to remove".format(nsl))
         elif is_subnet(nsl):
             try:
                 for addr in ipaddress.ip_network(nsl).hosts():
-                    targ_list.remove(addr)
+                    # targ_list.remove(addr)
                     nsl_set.add(addr)
                     logger.debug("Removing {}".format(addr))
 
