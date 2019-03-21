@@ -140,7 +140,7 @@ def main(options):
         
         if targ_output.exists():
             if targ_output.is_file():
-                overwrite = input('File already exists. Overwrite? Y = yes, N = no\n')
+                overwrite = input('File already exists. Overwrite (Y/N)? ')
                 if overwrite.lower() == 'y':
                     write_file(targ_set, nsl_set, options.output)
                 else:
