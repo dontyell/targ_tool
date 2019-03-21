@@ -7,7 +7,7 @@
 # 3) must accept cidr notation and subnet - CHECK
 # 4) must have a help functionality - CHECK
 # 5) must not have external dependencies - CHECK
-# 6) you must be willing and able brief tool description and functionality in 3 minutes - WON'T BE HERE
+# 6) you must be willing and able brief tool description and functionality in 3 minutes - IF I'M HERE
 
 # No current requirement to remove no strikes but that could be a winning feature... - CHECK
 
@@ -66,7 +66,8 @@ or optionally, to a provided file.'''
         opts.add_argument('-t', '--target', dest='targets', action='append', required=True, help='target IP address or network (using CIDR or subnet mask), multiple allowed', default=None)
         opts.add_argument('-n', '--nostrike', dest='nostrike', action='append', help='no-strike IP address or network, multiple allowed', default=None)
         opts.add_argument('-o', '--output', dest='output', help='file to write targets list to')
-        opts.add_argument('-v', '--verbose', action='count')
+        opts.add_argument('-c', '--counts', dest='counts', action='store_true', help='provide counts of target and no-strike IP addresses')
+        opts.add_argument('-v', '--verbose', action='count', help='increases verbosity')
         return opts
         
 def is_address(addr):
@@ -109,7 +110,10 @@ def main(options):
         elif is_subnet(targ):
             targets = ipaddress.ip_network(targ)
             # targ_list.extend(list(targets))
-            targ_set.update(list(targets.hosts()))
+            if len(list(targets)) == 1:
+                targ_set.update(list(targets))
+            else:
+                targ_set.update(list(targets.hosts()))
         else:
             logger.error("%s is not a valid target" % targ)
     
@@ -118,23 +122,18 @@ def main(options):
     if options.nostrike:
         for nsl in options.nostrike:
             if is_address(nsl):
-                try:
-                    # targ_list.remove(ipaddress.ip_address(nsl))
-                    nsl_set.add(ipaddress.ip_address(nsl))
-                except ValueError:
-                    logger.info("{} does not exist in target list, no need to remove".format(nsl))
+                # targ_list.append(targ)
+                nsl_set.add(ipaddress.ip_address(nsl))
             elif is_subnet(nsl):
-                try:
-                    for addr in ipaddress.ip_network(nsl).hosts():
-                        # targ_list.remove(addr)
-                        nsl_set.add(addr)
-                        logger.debug("Removing {}".format(addr))
-
-                except ValueError:
-                    logger.info("{} does not exist in target list, no need to remove".format(nsl))
+                nostrikes = ipaddress.ip_network(nsl)
+                # targ_list.extend(list(targets))
+                if len(list(nostrikes)) == 1:
+                    nsl_set.update(list(nostrikes))
+                else:
+                    nsl_set.update(list(nostrikes.hosts()))
             else:
-                logger.error("{} is not a valid IP address or subnet".format(nsl))
-    
+                logger.error("%s is not a valid no-strike" % nsl)
+
     if options.output:
         targ_output = Path(options.output)
         
@@ -156,10 +155,11 @@ def main(options):
         for item in sorted(targ_set.difference(nsl_set)):
             print(item)
     
-    logger.info("Total Targets Provided:        {}".format(len(targ_set)))
-    logger.info("Total No-strikes Provided:     {}".format(len(nsl_set)))
-    logger.info("Targets w/o no-strikes:        {}".format(len(targ_set.difference(nsl_set))))
-    logger.info("No-strikes not in Target list: {}".format(len(nsl_set.difference(targ_set))))
+    if options.counts:
+        logger.info("  Total Targets IPs Provided:    {}".format(len(targ_set)))
+        logger.info("  Total No-strike IPs Provided:  {}".format(len(nsl_set)))
+        logger.info("  Targets w/o no-strikes:        {}".format(len(targ_set.difference(nsl_set))))
+        logger.info("  No-strikes not in Target list: {}".format(len(nsl_set.difference(targ_set))))
 
 if __name__ == "__main__":
     parser = getinfo_options()

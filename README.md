@@ -14,7 +14,8 @@ This script will create a targets list based on the provided IP addresses or sub
                         no-strike IP address or network, multiple allowed
   -o OUTPUT, --output OUTPUT
                         file to write targets list to
-  -v, --verbose
+  -c, --counts          provide counts of target and no-strike IP addresses
+  -v, --verbose         increases verbosity
 ```
 ## Examples:
 ```
