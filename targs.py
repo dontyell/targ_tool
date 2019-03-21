@@ -1,10 +1,15 @@
+#!/usr/bin/env python3
 
-#!/usr/bin/env python
-# TODO
-# x Check if IP exists in list already
-#   x Use sets and output the difference
-# - Write targs to output file if specified
-# x Add code for verbosity
+# Create capability to replace existing methods to create targets list
+# Requirements:
+# 1) must run from the command line - CHECK
+# 2) must accept multiple target subnets - CHECK
+# 3) must accept cidr notation and subnet - CHECK
+# 4) must have a help functionality - CHECK
+# 5) must not have external dependencies - CHECK
+# 6) you must be willing and able brief tool description and functionality in 3 minutes - WON'T BE HERE
+
+# No current requirement to remove no strikes but that could be a winning feature... - CHECK
 
 import ipaddress
 import sys
@@ -67,22 +72,18 @@ or optionally, to a provided file.'''
 def is_address(addr):
     try:
         ip = ipaddress.ip_address(addr)
-        # print('%s is a proper IP%s address.' % (ip, ip.version))
         logger.debug('%s is a proper IP%s address.' % (ip, ip.version))
         return True
     except ValueError:
-        # print('%s is not a proper IP address' % addr)
         logger.debug('%s is not a proper IP address' % addr)
         return False
 
 def is_subnet(subnet):
     try:
         ip = ipaddress.ip_network(subnet)
-        # print('%s is a proper cidr/netmask format' % ip)
         logger.debug('%s is a proper cidr/netmask format' % ip)
         return True
     except ValueError:
-        # print('address/netmask is invalid: %s' % subnet)
         logger.debug('address/netmask is invalid: %s' % subnet)
         return False
 
@@ -94,47 +95,33 @@ def write_file(targ_set, nsl_set, outfile):
     logger.info("Your target list can be found in {}".format(outfile))
 
 def main(options):
-    #print(options)
-
     if options.verbose:
         logger.info("Verbose output on, level: {}".format(options.verbose))
         logger.setLevel(logging.DEBUG)
 
-    # if is_address(sys.argv[1]):
-    #     print("Got an IP Address")
-    # elif is_subnet(sys.argv[1]):
-    #     print("Got a subnet")
     logger.info("Building targets list...")
     targ_list = []
     targ_set = set()
     for targ in options.targets:
-        # print(targ)
         if is_address(targ):
             targ_list.append(targ)
             targ_set.add(ipaddress.ip_address(targ))
         elif is_subnet(targ):
-            # for addr in ipaddress.ip_network(targ).hosts():
-            #     # print(addr)
-            #     logging.debug(addr)
-            #     targ_list.append(addr)
             targets = ipaddress.ip_network(targ)
             targ_list.extend(list(targets))
             targ_set.update(list(targets))
         else:
             logger.error("%s is not a valid target" % targ)
     
-    # print(targ_list)
-    
     logger.info("Removing No-Strikes...")
     nsl_set = set()
     for nsl in options.nostrike:
-        # print(nsl)
         if is_address(nsl):
             try:
-                    targ_list.remove(ipaddress.ip_address(nsl))
-                    nsl_set.add(ipaddress.ip_address(nsl))
+                targ_list.remove(ipaddress.ip_address(nsl))
+                nsl_set.add(ipaddress.ip_address(nsl))
             except ValueError:
-                    logger.info("{} does not exist in target list, no need to remove".format(nsl))
+                logger.info("{} does not exist in target list, no need to remove".format(nsl))
         elif is_subnet(nsl):
             try:
                 for addr in ipaddress.ip_network(nsl).hosts():
@@ -148,15 +135,12 @@ def main(options):
             logger.error("{} is not a valid IP address or subnet".format(nsl))
     
     if options.output:
-        # TODO: Call write function
-        # targ_output = open(options.output, 'w')
         targ_output = Path(options.output)
-        #if targ_output.is_file():
+        
         if targ_output.exists():
             if targ_output.is_file():
                 overwrite = input('File already exists. Overwrite? Y = yes, N = no\n')
                 if overwrite.lower() == 'y':
-                    # call the function that writes the file here. use 'w' on the open handle
                     write_file(targ_set, nsl_set, options.output)
                 else:
                     logger.error("Will not overwrite {}; exiting...".format(targ_output))
@@ -170,20 +154,6 @@ def main(options):
         logger.info("Targets List:")
         for item in sorted(targ_set.difference(nsl_set)):
             print(item)
-
-    # logger.info("Set difference:")
-    #print(sorted(targ_set.difference(nsl_set)))
-    # for item in sorted(targ_set.difference(nsl_set)):
-    #     if options.output:
-    #         targ_output.write(str(item) + "\n")
-    #     else:
-    #         print(item)
-    
-    # if options.output:
-    #     targ_output.close()
-    #     logger.info("Your target list can be found in {}".format(options.output))
-
-
 
 if __name__ == "__main__":
     parser = getinfo_options()
