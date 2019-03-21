@@ -109,7 +109,7 @@ def main(options):
         elif is_subnet(targ):
             targets = ipaddress.ip_network(targ)
             # targ_list.extend(list(targets))
-            targ_set.update(list(targets))
+            targ_set.update(list(targets.hosts()))
         else:
             logger.error("%s is not a valid target" % targ)
     
