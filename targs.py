@@ -115,24 +115,25 @@ def main(options):
     
     logger.info("Removing No-Strikes...")
     nsl_set = set()
-    for nsl in options.nostrike:
-        if is_address(nsl):
-            try:
-                # targ_list.remove(ipaddress.ip_address(nsl))
-                nsl_set.add(ipaddress.ip_address(nsl))
-            except ValueError:
-                logger.info("{} does not exist in target list, no need to remove".format(nsl))
-        elif is_subnet(nsl):
-            try:
-                for addr in ipaddress.ip_network(nsl).hosts():
-                    # targ_list.remove(addr)
-                    nsl_set.add(addr)
-                    logger.debug("Removing {}".format(addr))
+    if options.nostrike:
+        for nsl in options.nostrike:
+            if is_address(nsl):
+                try:
+                    # targ_list.remove(ipaddress.ip_address(nsl))
+                    nsl_set.add(ipaddress.ip_address(nsl))
+                except ValueError:
+                    logger.info("{} does not exist in target list, no need to remove".format(nsl))
+            elif is_subnet(nsl):
+                try:
+                    for addr in ipaddress.ip_network(nsl).hosts():
+                        # targ_list.remove(addr)
+                        nsl_set.add(addr)
+                        logger.debug("Removing {}".format(addr))
 
-            except ValueError:
-                logger.info("{} does not exist in target list, no need to remove".format(nsl))
-        else:
-            logger.error("{} is not a valid IP address or subnet".format(nsl))
+                except ValueError:
+                    logger.info("{} does not exist in target list, no need to remove".format(nsl))
+            else:
+                logger.error("{} is not a valid IP address or subnet".format(nsl))
     
     if options.output:
         targ_output = Path(options.output)
