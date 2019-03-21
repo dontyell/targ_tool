@@ -155,6 +155,11 @@ def main(options):
         logger.info("Targets List:")
         for item in sorted(targ_set.difference(nsl_set)):
             print(item)
+    
+    logger.info("Total Targets Provided:        {}".format(len(targ_set)))
+    logger.info("Total No-strikes Provided:     {}".format(len(nsl_set)))
+    logger.info("Targets w/o no-strikes:        {}".format(len(targ_set.difference(nsl_set))))
+    logger.info("No-strikes not in Target list: {}".format(len(nsl_set.difference(targ_set))))
 
 if __name__ == "__main__":
     parser = getinfo_options()
