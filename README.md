@@ -1,4 +1,7 @@
 # targ_tool
+## requirements:
+Python 3
+
 ## description:
 This script will create a targets list based on the provided IP addresses or subnets.  If provided, it will also remove no-strike IP addresses or subnets.  Output will be to stdout, or optionally, to a provided file.
 
