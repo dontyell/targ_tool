@@ -19,9 +19,10 @@ from argparse import RawTextHelpFormatter
 from pathlib import Path
 
 class CustomConsoleFormatter(logging.Formatter):
-    err_fmt  = "ERROR: %(msg)s"
-    dbg_fmt  = "DEBUG: %(module)s: %(lineno)d: %(msg)s"
+    err_fmt  = "\033[91mERROR\033[00m: %(msg)s"
+    dbg_fmt  = "\033[96mDEBUG\033[00m: %(module)s: %(lineno)d: %(msg)s"
     info_fmt = "%(msg)s"
+    warn_fmt = "\033[93mWARNING\033[00m: %(msg)s"
 
     def __init__(self):
         super().__init__(fmt="%(levelno)d: %(msg)s", datefmt=None, style='%')  
@@ -41,6 +42,9 @@ class CustomConsoleFormatter(logging.Formatter):
 
         elif record.levelno == logging.ERROR:
             self._style._fmt = CustomConsoleFormatter.err_fmt
+
+        elif record.levelno == logging.WARNING:
+            self._style._fmt = CustomConsoleFormatter.warn_fmt
 
         # Call the original formatter class to do the grunt work
         result = logging.Formatter.format(self, record)
@@ -134,6 +138,9 @@ def main(options):
             else:
                 logger.error("%s is not a valid no-strike" % nsl)
 
+    if len(nsl_set.difference(targ_set)):
+        logger.warning("You provided no-strikes that are not in the target IP range")
+        
     if options.output:
         targ_output = Path(options.output)
         
@@ -154,7 +161,7 @@ def main(options):
         logger.info("Targets List:")
         for item in sorted(targ_set.difference(nsl_set)):
             print(item)
-    
+
     if options.counts:
         logger.info("  Total Targets IPs Provided:    {}".format(len(targ_set)))
         logger.info("  Total No-strike IPs Provided:  {}".format(len(nsl_set)))
