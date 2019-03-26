@@ -11,12 +11,17 @@
 
 # No current requirement to remove no strikes but that could be a winning feature... - CHECK
 
-import ipaddress
 import sys
 import logging
 import argparse
 from argparse import RawTextHelpFormatter
-from pathlib import Path
+
+if sys.version_info[0] >= 3:
+    import ipaddress
+    from pathlib import Path
+else:
+    print("\033[91mError\033[00m: Your Python version is {0}.{0}.  Please use Python 3 or higher".format(sys.version_info.major, sys.version_info.minor))
+    sys.exit(-1)
 
 class CustomConsoleFormatter(logging.Formatter):
     err_fmt  = "\033[91mERROR\033[00m: %(msg)s"
