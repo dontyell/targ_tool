@@ -1,14 +1,15 @@
 # targ_tool
-## requirements:
+
+## requirements
 Python 3
 
-## description:
+## description
 This script will create a targets list based on the provided IP addresses or subnets.  If provided, it will also remove no-strike IP addresses or subnets.  Output will be to stdout, or optionally, to a provided file.
 
-## usage:
+## usage
 `usage: targs.py [-h] -t TARGETS [-n NOSTRIKE] [-o OUTPUT] [-v]`
 
-## optional arguments:
+## optional arguments
 ```
   -h, --help            show this help message and exit
   -t TARGETS, --target TARGETS
@@ -20,7 +21,8 @@ This script will create a targets list based on the provided IP addresses or sub
   -c, --counts          provide counts of target and no-strike IP addresses
   -v, --verbose         increases verbosity
 ```
-## Examples:
+
+## Examples
 ```
 targs.py -t 192.168.1.0/24 -n 192.168.1.10 -o targs.txt
 targs.py -t 192.168.1.0/255.255.255.0 -n 192.168.1.0/29 -o targs.txt
