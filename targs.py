@@ -59,6 +59,23 @@ class CustomConsoleFormatter(logging.Formatter):
 
         return result
 
+# create logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# create console handler and set level to info
+ch = logging.StreamHandler()
+
+# create formatter
+# formatter = logging.Formatter('%(message)s')
+formatter = CustomConsoleFormatter()
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
 def getinfo_options():
         epilog_str = '''Examples:
         %(prog)s -t 192.168.1.0/24 -n 192.168.1.10 -o targs.txt
@@ -177,21 +194,6 @@ if __name__ == "__main__":
     parser = getinfo_options()
     options = parser.parse_args()
     
-    # create logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    # create console handler and set level to info
-    ch = logging.StreamHandler()
     
-    # create formatter
-    # formatter = logging.Formatter('%(message)s')
-    formatter = CustomConsoleFormatter()
-
-    # add formatter to ch
-    ch.setFormatter(formatter)
-
-    # add ch to logger
-    logger.addHandler(ch)
-
+    
     main(options)
